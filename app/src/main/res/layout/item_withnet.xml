@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:padding="8sp">
+
+    <ImageView
+        android:id="@+id/imageMusic"
+        android:layout_width="80sp"
+        android:layout_height="80sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="4">
+        <LinearLayout
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="4">
+            <TextView
+                android:id="@+id/textViewSongName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:layout_margin="7sp"
+                android:textColor="@android:color/black"/>
+            <TextView
+                android:id="@+id/textViewArtists"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:layout_margin="7sp"
+                android:textColor="@android:color/black"/>
+        </LinearLayout>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
+            <ImageView
+                android:id="@+id/imageDownload"
+                android:layout_width="40sp"
+                android:layout_height="40sp"
+                android:src="@drawable/ic_file_download_black_24dp"
+                android:clickable="true"
+                android:focusable="false"
+                tools:ignore="KeyboardInaccessibleWidget" />
+            <ProgressBar
+                android:id="@+id/progressBarDownload"
+                android:layout_width="40sp"
+                android:layout_height="40sp"
+                android:visibility="gone"
+                style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal" />
+            <ImageView
+                android:id="@+id/imageCheck"
+                android:layout_width="40sp"
+                android:layout_height="40sp"
+                android:src="@drawable/ic_check_black_24dp"
+                android:visibility="gone"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>
