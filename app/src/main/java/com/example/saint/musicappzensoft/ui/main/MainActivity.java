@@ -99,10 +99,9 @@ public class MainActivity extends BaseActivity implements MainContract.View, Mai
 
     @Override
     public void changeButtonPlay(boolean isPlaying) {
-        if(isPlaying){
+        if (isPlaying) {
             mButtonPlay.setBackgroundResource(R.drawable.ic_pause_black_24dp);
-        }
-        else{
+        } else {
             mButtonPlay.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
         }
     }
@@ -140,16 +139,18 @@ public class MainActivity extends BaseActivity implements MainContract.View, Mai
     }
 
     @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {}
+    public void onStartTrackingTouch(SeekBar seekBar) {
+    }
 
     @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {}
+    public void onStopTrackingTouch(SeekBar seekBar) {
+    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mPresenter.unbind();
-        if(mPresenter.isServiceBound()){
+        if (mPresenter.isServiceBound()) {
             unbindService(mPresenter.getConnection());
         }
     }
