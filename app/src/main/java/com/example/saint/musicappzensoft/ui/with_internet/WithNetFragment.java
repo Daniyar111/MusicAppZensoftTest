@@ -39,7 +39,7 @@ public class WithNetFragment extends BaseFragment implements WithNetContract.Vie
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if(getActivity() != null){
+        if (getActivity() != null) {
             mContext = getActivity().getApplicationContext();
         }
         mListViewMusics = view.findViewById(R.id.listViewMusics);
