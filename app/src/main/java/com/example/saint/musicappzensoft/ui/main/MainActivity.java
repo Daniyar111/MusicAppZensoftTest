@@ -121,7 +121,7 @@ public class MainActivity extends BaseActivity implements MainContract.View, Mai
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.buttonPrevious:
                 mPresenter.onClickPrevious();
                 break;
