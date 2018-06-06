@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public interface MainCallBack {
 
-    void onMusicItemClicked(int position);
+    void onMusicItemClicked(int position, boolean hasInternet);
 
     void getMusicsData(ArrayList<MusicModel> musicModels);
 }

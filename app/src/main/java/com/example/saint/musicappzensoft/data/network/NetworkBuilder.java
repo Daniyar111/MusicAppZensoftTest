@@ -2,7 +2,7 @@ package com.example.saint.musicappzensoft.data.network;
 
 import android.support.annotation.NonNull;
 
-import com.example.saint.musicappzensoft.config.AppConstants;
+import com.example.saint.musicappzensoft.BuildConfig;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -18,11 +18,11 @@ public final class NetworkBuilder {
 
     private static RetrofitService sService = null;
 
-    public static RetrofitService initService(){
+    public static RetrofitService initService() {
 
-        if(sService == null){
+        if (sService == null) {
             sService = new Retrofit.Builder()
-                    .baseUrl(AppConstants.BASE_URL)
+                    .baseUrl(BuildConfig.BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(getClient())
                     .build()
@@ -31,7 +31,7 @@ public final class NetworkBuilder {
         return sService;
     }
 
-    private static OkHttpClient getClient(){
+    private static OkHttpClient getClient() {
 
         return new OkHttpClient.Builder()
                 .addInterceptor(new Interceptor() {

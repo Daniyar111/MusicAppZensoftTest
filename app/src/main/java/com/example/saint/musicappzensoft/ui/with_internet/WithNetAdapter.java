@@ -7,26 +7,32 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.saint.musicappzensoft.R;
+import com.example.saint.musicappzensoft.data.db.SQLiteHelper;
 import com.example.saint.musicappzensoft.data.entity.MusicModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
-public class WithNetAdapter extends BaseAdapter{
+public class WithNetAdapter extends BaseAdapter {
 
     private ArrayList<MusicModel> mMusicModels;
     private Context mContext;
     private MusicModel mModel;
     private WithNetAdapterCallBack mAdapterCallBack;
+    private SQLiteHelper mSQLiteHelper;
+    private Set<Integer> mDownloadSet = new HashSet<>();
 
-    public WithNetAdapter(Context context, ArrayList<MusicModel> musicModels, WithNetAdapterCallBack adapterCallBack){
+    WithNetAdapter(Context context, ArrayList<MusicModel> musicModels, WithNetAdapterCallBack adapterCallBack, SQLiteHelper sqLiteHelper) {
         mContext = context;
         mMusicModels = musicModels;
         mAdapterCallBack = adapterCallBack;
+        mSQLiteHelper = sqLiteHelper;
     }
 
     @Override
@@ -48,12 +54,11 @@ public class WithNetAdapter extends BaseAdapter{
     public View getView(final int position, View convertView, ViewGroup parent) {
 
         final ViewHolder holder;
-        if(convertView == null){
+        if (convertView == null) {
             convertView = LayoutInflater.from(mContext).inflate(R.layout.item_withnet, parent, false);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
-        }
-        else{
+        } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
@@ -61,24 +66,24 @@ public class WithNetAdapter extends BaseAdapter{
         holder.mTextViewSongName.setText(mModel.getSong());
         holder.mTextViewArtists.setText(mModel.getArtists());
         Picasso.get().load(mModel.getCoverImage()).into(holder.mImageViewMusic);
+        imageDownloadController(holder, position);
 
         holder.mImageViewDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(), mMusicModels.get(position).getSong(), Toast.LENGTH_LONG).show();
                 mAdapterCallBack.onDownloadClick(position, mMusicModels, holder);
-
             }
         });
         return convertView;
     }
 
-    class ViewHolder{
+    class ViewHolder {
 
         TextView mTextViewSongName, mTextViewArtists;
         ImageView mImageViewMusic, mImageViewDownload, mImageViewCheck;
         ProgressBar mProgressBarDownload;
-        ViewHolder(View view){
+
+        ViewHolder(View view) {
             mTextViewSongName = view.findViewById(R.id.textViewSongName);
             mTextViewArtists = view.findViewById(R.id.textViewArtists);
             mImageViewMusic = view.findViewById(R.id.imageMusic);
@@ -86,5 +91,26 @@ public class WithNetAdapter extends BaseAdapter{
             mImageViewCheck = view.findViewById(R.id.imageCheck);
             mProgressBarDownload = view.findViewById(R.id.progressBarDownload);
         }
+    }
+
+    private void imageDownloadController(ViewHolder holder, final int position) {
+        holder.mImageViewDownload.setOnFocusChangeListener(null);
+        holder.mImageViewCheck.setOnFocusChangeListener(null);
+        holder.mImageViewDownload.setVisibility(mDownloadSet.contains(position) ? View.GONE : View.VISIBLE);
+        holder.mImageViewCheck.setVisibility(mDownloadSet.contains(position) ? View.VISIBLE : View.GONE);
+        if (mSQLiteHelper.isDownloadedMusic(mMusicModels.get(position).getUrl())) {
+            holder.mImageViewDownload.setVisibility(View.GONE);
+            holder.mImageViewCheck.setVisibility(View.VISIBLE);
+        }
+        holder.mImageViewDownload.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    mDownloadSet.add(position);
+                } else {
+                    mDownloadSet.remove(position);
+                }
+            }
+        });
     }
 }

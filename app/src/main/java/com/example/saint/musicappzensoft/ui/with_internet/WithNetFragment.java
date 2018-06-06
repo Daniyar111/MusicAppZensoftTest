@@ -1,8 +1,6 @@
 package com.example.saint.musicappzensoft.ui.with_internet;
 
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,11 +11,13 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.saint.musicappzensoft.MusicApplication;
 import com.example.saint.musicappzensoft.R;
 import com.example.saint.musicappzensoft.data.entity.MusicModel;
 import com.example.saint.musicappzensoft.data.manager.RetrofitServiceManager;
 import com.example.saint.musicappzensoft.ui.BaseFragment;
 import com.example.saint.musicappzensoft.ui.main.MainCallBack;
+import com.example.saint.musicappzensoft.utils.AndroidUtils;
 
 import java.util.ArrayList;
 
@@ -53,7 +53,7 @@ public class WithNetFragment extends BaseFragment implements WithNetContract.Vie
 
     @Override
     public void onSuccess(ArrayList<MusicModel> musicModels) {
-        mAdapter = new WithNetAdapter(mContext, musicModels, WithNetFragment.this);
+        mAdapter = new WithNetAdapter(mContext, musicModels, WithNetFragment.this, MusicApplication.get(mContext).getSQLiteHelper());
         mListViewMusics.setAdapter(mAdapter);
         mListViewMusics.setOnItemClickListener(this);
         mCallBack.getMusicsData(musicModels);
@@ -61,17 +61,24 @@ public class WithNetFragment extends BaseFragment implements WithNetContract.Vie
 
     @Override
     public void onError(String message) {
-        Toast.makeText(mContext, message, Toast.LENGTH_LONG).show();
+        AndroidUtils.showToast(mContext, message);
+    }
+
+    @Override
+    public void toastDownloaded() {
+        AndroidUtils.showToast(mContext, mContext.getString(R.string.music_is_downloaded));
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        mCallBack.onMusicItemClicked(position);
+        mCallBack.onMusicItemClicked(position, true);
     }
 
     @Override
     public void onDownloadClick(int position, ArrayList<MusicModel> musicModels, WithNetAdapter.ViewHolder holder) {
-        new WithNetPresenter.DownloadFileFromURL(holder, musicModels.get(position)).execute(musicModels.get(position).getUrl());
+        new WithNetPresenter.DownloadFileFromURL(holder, musicModels.get(position),
+                MusicApplication.get(mContext).getSQLiteHelper(), mPresenter)
+                .execute(musicModels.get(position).getUrl());
     }
 
     @Override

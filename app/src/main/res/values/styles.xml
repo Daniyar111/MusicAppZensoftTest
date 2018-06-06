@@ -8,4 +8,119 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="SlidingUpPanelTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">bottom</item>
+    </style>
+
+    <style name="VerticalLinearLayoutTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="HorizontalLinearLayoutTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="ToolbarTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
+    
+    <style name="ProgressBarWithnetTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:visibility">gone</item>
+    </style>
+    
+    <style name="TextViewPlayerLayoutTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:gravity">center</item>
+    </style>
+    
+    <style name="LinearLayoutPlayerButtonsTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_marginTop">@dimen/marginFifty</item>
+        <item name="android:padding">@dimen/paddingFifteen</item>
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+
+    <style name="ButtonPlayPlayerTheme">
+        <item name="android:layout_width">60sp</item>
+        <item name="android:layout_height">60sp</item>
+        <item name="android:background">@drawable/ic_play_arrow_black_24dp</item>
+        <item name="android:layout_marginRight">@dimen/marginForty</item>
+        <item name="android:layout_marginLeft">@dimen/marginForty</item>
+    </style>
+
+    <style name="ButtonNextPreviousPlayerTheme">
+        <item name="android:layout_width">60sp</item>
+        <item name="android:layout_height">60sp</item>
+    </style>
+
+    <style name="LinearLayoutPlayerVolumeTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_marginTop">@dimen/marginForty</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="ImageVolumePlayerTheme">
+        <item name="android:layout_width">20sp</item>
+        <item name="android:layout_height">20sp</item>
+    </style>
+
+    <style name="SeekBarVolumePlayerTheme">
+        <item name="android:layout_width">300sp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:progress">50</item>
+        <item name="android:max">100</item>
+    </style>
+
+    <style name="HorizontalLinearLayoutWithNetWholeTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:weightSum">4</item>
+    </style>
+
+    <style name="VerticalLinearLayoutWithNetTextViewTheme">
+        <item name="android:layout_width">0sp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_weight">4</item>
+    </style>
+
+    <style name="TextViewWithNetTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/marginSeven</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <style name="ImageDownloadWithNetTheme">
+        <item name="android:layout_width">40sp</item>
+        <item name="android:layout_height">40sp</item>
+        <item name="android:src">@drawable/ic_file_download_black_24dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">false</item>
+    </style>
+
+    <style name="ImageCheckWithNetTheme">
+        <item name="android:layout_width">40sp</item>
+        <item name="android:layout_height">40sp</item>
+        <item name="android:src">@drawable/ic_check_black_24dp</item>
+        <item name="android:visibility">gone</item>
+    </style>
 </resources>

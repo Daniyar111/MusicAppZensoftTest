@@ -21,6 +21,16 @@ public class MusicModel implements Parcelable {
     @Expose
     private String coverImage;
 
+    private long id;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public String getSong() {
         return song;
     }
@@ -53,13 +63,15 @@ public class MusicModel implements Parcelable {
         this.coverImage = coverImage;
     }
 
-    public MusicModel(){}
+    public MusicModel() {
+    }
 
     protected MusicModel(Parcel in) {
         song = in.readString();
         url = in.readString();
         artists = in.readString();
         coverImage = in.readString();
+        id = in.readLong();
     }
 
     @Override
@@ -73,6 +85,7 @@ public class MusicModel implements Parcelable {
         dest.writeString(url);
         dest.writeString(artists);
         dest.writeString(coverImage);
+        dest.writeLong(id);
     }
 
     @SuppressWarnings("unused")

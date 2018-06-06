@@ -10,6 +10,6 @@ import retrofit2.http.GET;
 
 public interface RetrofitService {
 
-    @GET(AppConstants.STUDIO_LIST)
+    @GET(AppConstants.COMMON_ENDPOINT)
     Call<ArrayList<MusicModel>> getMusicList();
 }

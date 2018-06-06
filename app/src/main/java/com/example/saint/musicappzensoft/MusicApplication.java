@@ -19,11 +19,11 @@ public class MusicApplication extends Application {
         mSQLiteHelper = new SQLiteHelper(getApplicationContext());
     }
 
-    public static MusicApplication get(Context context){
+    public static MusicApplication get(Context context) {
         return (MusicApplication) context.getApplicationContext();
     }
 
-    public RetrofitService getService(){
+    public RetrofitService getService() {
         return sService;
     }
 

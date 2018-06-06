@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/HorizontalLinearLayoutTheme"
+    android:padding="@dimen/paddingEight">
+
+    <ImageView
+        android:id="@+id/imageMusic"
+        android:layout_width="80sp"
+        android:layout_height="80sp"
+        android:contentDescription="@string/panel_music_image" />
+
+    <LinearLayout
+        style="@style/VerticalLinearLayoutWithNetTextViewTheme">
+        <TextView
+            android:id="@+id/textViewSongName"
+            android:textSize="22sp"
+            style="@style/TextViewWithNetTheme"/>
+        <TextView
+            android:id="@+id/textViewArtists"
+            android:textSize="15sp"
+            style="@style/TextViewWithNetTheme"/>
+    </LinearLayout>
+
+</LinearLayout>

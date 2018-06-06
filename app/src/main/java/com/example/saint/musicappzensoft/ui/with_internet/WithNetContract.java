@@ -13,10 +13,14 @@ public interface WithNetContract {
         void onSuccess(ArrayList<MusicModel> musicModels);
 
         void onError(String message);
+
+        void toastDownloaded();
     }
 
     interface Presenter extends LifeCycle<View>{
 
         void getMusics();
+
+        void musicIsDownloaded();
     }
 }
