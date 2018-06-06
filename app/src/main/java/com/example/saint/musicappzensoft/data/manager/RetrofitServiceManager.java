@@ -15,12 +15,12 @@ public final class RetrofitServiceManager {
     private Context mContext;
     private RetrofitService mService;
 
-    public RetrofitServiceManager(Context context){
+    public RetrofitServiceManager(Context context) {
         mContext = context;
         mService = MusicApplication.get(mContext).getService();
     }
 
-    public Call<ArrayList<MusicModel>> getMusicList(){
+    public Call<ArrayList<MusicModel>> getMusicList() {
         return mService.getMusicList();
     }
 }

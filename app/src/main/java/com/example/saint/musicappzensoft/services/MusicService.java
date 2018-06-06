@@ -1,17 +1,26 @@
 package com.example.saint.musicappzensoft.services;
 
 import android.app.Service;
+import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.saint.musicappzensoft.MusicApplication;
+import com.example.saint.musicappzensoft.config.AppConstants;
+import com.example.saint.musicappzensoft.data.db.SQLiteHelper;
 import com.example.saint.musicappzensoft.data.entity.MusicModel;
+import com.example.saint.musicappzensoft.ui.main.MainActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,6 +29,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     private MusicBinder mBinder = new MusicBinder();
     private MediaPlayer mPlayer;
+    private int mStartId;
 
     @Override
     public void onCreate() {
@@ -30,7 +40,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         mPlayer.setOnPreparedListener(this);
         mPlayer.setOnErrorListener(this);
         mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
     }
 
     public class MusicBinder extends Binder {
@@ -41,16 +50,13 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-        Toast.makeText(this, "Start id: " + startId, Toast.LENGTH_LONG).show();
-
+        mStartId = startId;
         return START_NOT_STICKY;
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-//        Toast.makeText(this, "onBind", Toast.LENGTH_LONG).show();
         return mBinder;
     }
 
@@ -63,6 +69,10 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     @Override
     public void onPrepared(MediaPlayer mp) {
         mPlayer.start();
+    }
+
+    public boolean isServiceStartOld(){
+        return mStartId != 1;
     }
 
     public boolean handleMusicPlay(){
@@ -78,9 +88,19 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         mPlayer.reset();
 
         Uri uri = Uri.parse(musicModels.get(position).getUrl());
-        if(uri == null){
-            return;
+        if(uri == null) return;
+        try {
+            mPlayer.setDataSource(getApplicationContext(), uri);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        mPlayer.prepareAsync();
+    }
+
+    public void playMusicByStorage(int position, ArrayList<MusicModel> musicModels){
+        mPlayer.reset();
+        Uri uri = ContentUris.withAppendedId(AppConstants.AUDIO_STORAGE_URI, musicModels.get(position).getId());
+        if(uri == null) return;
         try {
             mPlayer.setDataSource(getApplicationContext(), uri);
         } catch (IOException e) {
@@ -101,8 +121,6 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d("DANI", "SERVICE IS DESTROYED");
-        Toast.makeText(this, "service is destroyed", Toast.LENGTH_LONG).show();
         mPlayer.stop();
         mPlayer.release();
         stopSelf();

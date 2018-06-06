@@ -7,7 +7,7 @@ import android.view.View;
 
 import com.example.saint.musicappzensoft.R;
 
-public abstract class BaseActivity extends AppCompatActivity{
+public abstract class BaseActivity extends AppCompatActivity {
 
     protected abstract int getViewLayout();
     protected abstract int getToolbarId();
@@ -20,15 +20,15 @@ public abstract class BaseActivity extends AppCompatActivity{
         setContentView(getViewLayout());
     }
 
-    protected void getToolbar(String title){
+    protected void getToolbar(String title) {
         mToolbar = findViewById(getToolbarId());
         setSupportActionBar(mToolbar);
-        if(getSupportActionBar() != null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(title);
         }
     }
 
-    protected void switchFragment(Fragment fragment){
+    protected void switchFragment(Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragmentContainer, fragment)

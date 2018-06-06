@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">MusicAppZensoft</string>
+    <string name="check_image">Check image</string>
+    <string name="download_image">Download image</string>
+    <string name="music_is_downloaded">Music is downloaded</string>
     <string name="music_player">Music Player</string>
+    <string name="no_internet">There is no Internet</string>
+    <string name="panel_music_image">Panel music image</string>
+    <string name="volume_mute">Volume mute</string>
+    <string name="volume_up">Volume up</string>
 </resources>

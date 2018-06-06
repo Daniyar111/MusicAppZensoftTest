@@ -1,13 +1,12 @@
 package com.example.saint.musicappzensoft.ui.with_internet;
 
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 
 import com.example.saint.musicappzensoft.config.AppConstants;
+import com.example.saint.musicappzensoft.data.db.SQLiteHelper;
 import com.example.saint.musicappzensoft.data.entity.MusicModel;
 import com.example.saint.musicappzensoft.data.manager.RetrofitServiceManager;
 
@@ -33,25 +32,25 @@ public class WithNetPresenter implements WithNetContract.Presenter {
     private WithNetContract.View mView;
     private ArrayList<MusicModel> mMusicModels = new ArrayList<>();
 
-    public WithNetPresenter(RetrofitServiceManager serviceManager){
+    WithNetPresenter(RetrofitServiceManager serviceManager) {
         mServiceManager = serviceManager;
     }
 
     @Override
     public void getMusics() {
-        if(isViewAttached()){
+        if (isViewAttached()) {
             mView.showLoadingIndicator();
             mServiceManager.getMusicList().enqueue(new Callback<ArrayList<MusicModel>>() {
                 @Override
                 public void onResponse(@NonNull Call<ArrayList<MusicModel>> call, @NonNull Response<ArrayList<MusicModel>> response) {
                     if (response.body() != null && response.isSuccessful()) {
-                        if(isViewAttached()){
+                        if (isViewAttached()) {
                             mMusicModels = response.body();
                             mView.hideLoadingIndicator();
                             mView.onSuccess(mMusicModels);
                         }
                     } else {
-                        if(isViewAttached()){
+                        if (isViewAttached()) {
                             mView.hideLoadingIndicator();
                             mView.onError(response.message());
                         }
@@ -60,13 +59,18 @@ public class WithNetPresenter implements WithNetContract.Presenter {
 
                 @Override
                 public void onFailure(@NonNull Call<ArrayList<MusicModel>> call, @NonNull Throwable t) {
-                    if(isViewAttached()){
+                    if (isViewAttached()) {
                         mView.onError(t.getMessage());
                         mView.hideLoadingIndicator();
                     }
                 }
             });
         }
+    }
+
+    @Override
+    public void musicIsDownloaded() {
+        if (isViewAttached()) mView.toastDownloaded();
     }
 
     static class DownloadFileFromURL extends AsyncTask<String, String, String> {
@@ -76,69 +80,74 @@ public class WithNetPresenter implements WithNetContract.Presenter {
         private InputStream mInputStream;
         private OutputStream mOutputStream;
         private File mMusicFolder, mMusicFile;
-        private String mStorageDirectory, mMusicName;
-        private byte[] mData = new byte[4096];
+        private String mMusicName;
+        private byte[] mData = new byte[AppConstants.DATA_BYTE];
         private long mTotal = 0;
         private int mCount, mLengthOfFile;
         private WithNetAdapter.ViewHolder mHolder;
         private MusicModel mMusicModel;
+        private SQLiteHelper mSQLiteHelper;
+        private WithNetPresenter mPresenter;
 
-        DownloadFileFromURL(WithNetAdapter.ViewHolder holder, MusicModel musicModel){
+        DownloadFileFromURL(WithNetAdapter.ViewHolder holder, MusicModel musicModel, SQLiteHelper sqLiteHelper, WithNetPresenter presenter) {
             mHolder = holder;
             mMusicModel = musicModel;
+            mSQLiteHelper = sqLiteHelper;
+            mPresenter = presenter;
         }
 
         @Override
-        protected void onPreExecute(){
+        protected void onPreExecute() {
             super.onPreExecute();
             mHolder.mImageViewDownload.setVisibility(View.GONE);
             mHolder.mProgressBarDownload.setVisibility(View.VISIBLE);
         }
 
         @Override
-        protected  String doInBackground(String... f_url){
-            try{
+        protected String doInBackground(String... f_url) {
+            try {
                 mURL = new URL(expandUrl(f_url[0]));
                 mConnection = mURL.openConnection();
                 mConnection.connect();
 
-                mInputStream = new BufferedInputStream(mURL.openStream(), 8192);
-                mStorageDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
-                mMusicFolder = new File(mStorageDirectory + AppConstants.FOLDER_NAME + "/");
-                if(!mMusicFolder.exists()){
+                mInputStream = new BufferedInputStream(mURL.openStream(), AppConstants.INPUT_STREAM_SIZE);
+                mMusicFolder = new File(AppConstants.EXTERNAL_STORAGE + AppConstants.FOLDER_NAME);
+                if (!mMusicFolder.exists()) {
                     mMusicFolder.mkdir();
                 }
                 mLengthOfFile = mConnection.getContentLength();
-                mMusicName = "/" + mMusicModel.getSong() + ".mp3";
+                mMusicName = mMusicModel.getSong() + AppConstants.MP3_FORMAT;
 
-                mMusicFile = new File(mStorageDirectory + AppConstants.FOLDER_NAME + mMusicName);
+                mMusicFile = new File(AppConstants.EXTERNAL_STORAGE + AppConstants.FOLDER_NAME + mMusicName);
                 mOutputStream = new FileOutputStream(mMusicFile);
 
-                while((mCount = mInputStream.read(mData)) != -1){
+                while ((mCount = mInputStream.read(mData)) != -1) {
                     mTotal += mCount;
-                    publishProgress(""+(int)((mTotal * 100) / mLengthOfFile));
+                    publishProgress("" + (int) ((mTotal * 100) / mLengthOfFile));
                     mOutputStream.write(mData, 0, mCount);
                 }
                 mOutputStream.flush();
                 mOutputStream.close();
                 mInputStream.close();
-            }catch (Exception e){
+            } catch (Exception e) {
                 Log.e("Error: ", e.getMessage());
             }
             return null;
         }
 
-        protected void onProgressUpdate(String... progress){
+        protected void onProgressUpdate(String... progress) {
             mHolder.mProgressBarDownload.setProgress(Integer.parseInt(progress[0]));
         }
 
         @Override
-        protected void onPostExecute(String file_url){
+        protected void onPostExecute(String file_url) {
             mHolder.mProgressBarDownload.setVisibility(View.GONE);
             mHolder.mImageViewCheck.setVisibility(View.VISIBLE);
+            mSQLiteHelper.saveDownloadedMusic(mMusicModel.getUrl(), true);
+            mPresenter.musicIsDownloaded();
         }
 
-        private String expandUrl(String shortenedUrl) throws IOException{
+        private String expandUrl(String shortenedUrl) throws IOException {
             URL url = new URL(shortenedUrl);
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection(Proxy.NO_PROXY);
             httpURLConnection.setInstanceFollowRedirects(false);
@@ -158,7 +167,7 @@ public class WithNetPresenter implements WithNetContract.Presenter {
         mView = null;
     }
 
-    private boolean isViewAttached(){
+    private boolean isViewAttached() {
         return mView != null;
     }
 }

@@ -2,15 +2,13 @@ package com.example.saint.musicappzensoft.ui.main;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.saint.musicappzensoft.MusicApplication;
 import com.example.saint.musicappzensoft.R;
@@ -20,6 +18,7 @@ import com.example.saint.musicappzensoft.services.MusicService;
 import com.example.saint.musicappzensoft.ui.BaseActivity;
 import com.example.saint.musicappzensoft.ui.with_internet.WithNetFragment;
 import com.example.saint.musicappzensoft.ui.without_internet.WithoutNetFragment;
+import com.example.saint.musicappzensoft.utils.AndroidUtils;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.picasso.Picasso;
 
@@ -33,7 +32,7 @@ public class MainActivity extends BaseActivity implements MainContract.View, Mai
     private TextView mTextViewSongName, mTextViewArtists;
     private Button mButtonPrevious, mButtonPlay, mButtonNext;
     private SeekBar mSeekBarVolume;
-    private Intent intentService;
+    private Intent mIntentService;
 
     @Override
     protected int getViewLayout() {
@@ -50,15 +49,7 @@ public class MainActivity extends BaseActivity implements MainContract.View, Mai
         super.onCreate(savedInstanceState);
         setContentView(getViewLayout());
         getToolbar(getResources().getString(R.string.music_player));
-
-        mSlidingUpPanelLayout = findViewById(R.id.playerPanel);
-        mImageViewPanelMusic = findViewById(R.id.imagePanelMusic);
-        mTextViewSongName = findViewById(R.id.textViewSongName);
-        mTextViewArtists = findViewById(R.id.textViewArtists);
-        mButtonPrevious = findViewById(R.id.buttonPrevious);
-        mButtonPlay = findViewById(R.id.buttonPlay);
-        mButtonNext = findViewById(R.id.buttonNext);
-        mSeekBarVolume = findViewById(R.id.volumeBar);
+        initializeViews();
 
         mPresenter = new MainPresenter(new SystemServiceManager(this), new MusicService(), MusicApplication.get(this).getSQLiteHelper());
         mPresenter.bind(this);
@@ -69,15 +60,28 @@ public class MainActivity extends BaseActivity implements MainContract.View, Mai
         mButtonPlay.setOnClickListener(this);
         mButtonNext.setOnClickListener(this);
         mSeekBarVolume.setOnSeekBarChangeListener(this);
-        intentService = new Intent(this, MusicService.class);
-        startService(intentService);
-        bindService(intentService, mPresenter.getServiceConnection(), Context.BIND_AUTO_CREATE);
-//        if(mPresenter.isMusicPlaying()){
-//            mSlidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
-//            mButtonPlay.setBackgroundResource(R.drawable.ic_pause_black_24dp);
-//            mPresenter.savedMusicMover();
-//        }
 
+        mIntentService = new Intent(this, MusicService.class);
+        startService(mIntentService);
+        bindService(mIntentService, mPresenter.getServiceConnection(), Context.BIND_AUTO_CREATE);
+
+//        mPresenter.showSavedInstance();
+    }
+
+    private void initializeViews() {
+        mSlidingUpPanelLayout = findViewById(R.id.playerPanel);
+        mImageViewPanelMusic = findViewById(R.id.imagePanelMusic);
+        mTextViewSongName = findViewById(R.id.textViewSongName);
+        mTextViewArtists = findViewById(R.id.textViewArtists);
+        mButtonPrevious = findViewById(R.id.buttonPrevious);
+        mButtonPlay = findViewById(R.id.buttonPlay);
+        mButtonNext = findViewById(R.id.buttonNext);
+        mSeekBarVolume = findViewById(R.id.volumeBar);
+    }
+
+    @Override
+    public void toast() {
+        AndroidUtils.showToast(this, getResources().getString(R.string.no_internet));
     }
 
     @Override
@@ -91,7 +95,19 @@ public class MainActivity extends BaseActivity implements MainContract.View, Mai
     }
 
     @Override
-    public void onMusicPlay(int position, ArrayList<MusicModel> musicModels) {
+    public void onMusicPlayByStorage(int position, ArrayList<MusicModel> musicModels) {
+        mTextViewSongName.setText(musicModels.get(position).getSong());
+        mTextViewArtists.setText(musicModels.get(position).getArtists());
+        if (musicModels.get(position).getCoverImage() == null) {
+            mImageViewPanelMusic.setImageDrawable(getResources().getDrawable(R.drawable.default_cover));
+        } else {
+            Drawable image = Drawable.createFromPath(musicModels.get(position).getCoverImage());
+            mImageViewPanelMusic.setImageDrawable(image);
+        }
+    }
+
+    @Override
+    public void onMusicPlayByInternet(int position, ArrayList<MusicModel> musicModels) {
         Picasso.get().load(musicModels.get(position).getCoverImage()).into(mImageViewPanelMusic);
         mTextViewSongName.setText(musicModels.get(position).getSong());
         mTextViewArtists.setText(musicModels.get(position).getArtists());
@@ -107,10 +123,14 @@ public class MainActivity extends BaseActivity implements MainContract.View, Mai
     }
 
     @Override
-    public void onMusicItemClicked(int position) {
+    public void onMusicItemClicked(int position, boolean hasInternet) {
         mSlidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
         mButtonPlay.setBackgroundResource(R.drawable.ic_pause_black_24dp);
-        mPresenter.musicMover(position);
+        if (hasInternet) {
+            mPresenter.musicMoverByInternet(position);
+        } else {
+            mPresenter.musicMoverByStorage(position);
+        }
     }
 
     @Override
@@ -149,6 +169,8 @@ public class MainActivity extends BaseActivity implements MainContract.View, Mai
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mPresenter.saveOnDestroyed();
+
         mPresenter.unbind();
         if (mPresenter.isServiceBound()) {
             unbindService(mPresenter.getConnection());

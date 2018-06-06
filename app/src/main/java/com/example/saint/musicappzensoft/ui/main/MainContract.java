@@ -11,11 +11,15 @@ public interface MainContract {
 
     interface View{
 
+        void toast();
+
         void goToWithInternet();
 
         void goToWithoutInternet();
 
-        void onMusicPlay(int position, ArrayList<MusicModel> musicModels);
+        void onMusicPlayByInternet(int position, ArrayList<MusicModel> musicModels);
+
+        void onMusicPlayByStorage(int position, ArrayList<MusicModel> musicModels);
 
         void changeButtonPlay(boolean isPlaying);
     }
@@ -24,13 +28,15 @@ public interface MainContract {
 
         void fragmentSwitcher();
 
+        void showSavedInstance();
+
         ServiceConnection getServiceConnection();
 
         void getMusicList(ArrayList<MusicModel> musicModels);
 
-        void musicMover(int position);
+        void musicMoverByInternet(int position);
 
-//        void savedMusicMover();
+        void musicMoverByStorage(int position);
 
         void onClickPrevious();
 
@@ -44,6 +50,6 @@ public interface MainContract {
 
         boolean isServiceBound();
 
-//        boolean isMusicPlaying();
+        void saveOnDestroyed();
     }
 }
